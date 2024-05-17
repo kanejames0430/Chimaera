@@ -6,6 +6,7 @@ import re
 import numpy as np
 import numpy as np
 import plotly.graph_objs as go
+import fitz
 
 
 def readData(dir):
@@ -230,3 +231,38 @@ def plot_3d_projection(matrix, labels):
 
     fig = go.Figure(data=[trace], layout=layout)
     fig.show()
+
+def extractText(path):
+    '''
+    From a given path, extract the contents of the file and return just the text.
+    '''
+    # gets the extention of the file
+    extension = path.split('.')[-1]
+    content = ''
+
+    # Cases for different media files
+    match extension:
+        case 'pdf':
+            doc = fitz.open(path) 
+            for page in doc: 
+                content += page.get_text() 
+        case 'docx':
+            #call pydocx
+            print("Feature not yet implemented.")
+        case defualt:
+            #the file is a txt file and no preprocessing needs to be handled
+            with open(path,'r',encoding='utf-8') as f:
+                content = f.read()
+    return content,path,extension
+
+def writeContent(content,path,extension,outDir):
+    '''
+    Takes in outputs from extract text and writes it to an appropriately names .txt file. The outDir is where we want
+    to write the text to.
+    '''
+
+    # Remove the extension from the path string and add txt because we want to write the content to a text file
+    fileName = path.split('/')[-1]
+    outPath = outDir + '/' + fileName.replace(extension,'txt')
+    with open(outPath,"w+",encoding='utf-8') as f:
+        f.write(content)
