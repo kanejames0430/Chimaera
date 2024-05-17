@@ -175,14 +175,14 @@ def plot_2d_projection(matrix, labels):
     trace = go.Scatter(
         x=matrix[:, 0],
         y=matrix[:, 1],
-        mode='markers+text',
+        mode='markers',
         marker=dict(
             size=10,
             color=colors_hex,
             opacity=0.8,
         ),
         text=labels,
-        textposition='top center'
+        hoverinfo='text'
     )
 
     layout = go.Layout(
@@ -209,14 +209,14 @@ def plot_3d_projection(matrix, labels):
         x=matrix[:, 0],
         y=matrix[:, 1],
         z=matrix[:, 2],
-        mode='markers+text',
+        mode='markers',
         marker=dict(
             size=10,
             color=colors_hex,
             opacity=0.8,
         ),
         text=labels,
-        textposition='top center'
+        hoverinfo='text'
     )
 
     layout = go.Layout(
@@ -230,4 +230,3 @@ def plot_3d_projection(matrix, labels):
 
     fig = go.Figure(data=[trace], layout=layout)
     fig.show()
-
