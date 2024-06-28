@@ -7,7 +7,8 @@ import numpy as np
 import numpy as np
 import plotly.graph_objs as go
 import fitz
-
+from docx import Document
+import win32com.client
 
 def readData(dir):
     '''
@@ -29,12 +30,12 @@ def readData(dir):
 
     return languageDict
 
-def tokenize(dictionary):
+def stem(dictionary):
     '''
     tokenize takes in the dictionary of languages we create in readData(), and returns a dictionary of tokenized words.
     We use the snowball stemmer method because it covers a total of 17 languages, which we can implement later.
     '''
-    tokDict = {}
+    dict = {}
 
     #for each language in the dictionary, 
     for j,k in dictionary.items():
@@ -49,8 +50,8 @@ def tokenize(dictionary):
         for word in k:
             stem_word = stemmer.stem(word)  # stemming word
             tokList.append(stem_word)  # append to the list
-        tokDict[j] = tokList
-    return tokDict
+        dict[j] = tokList
+    return dict
 
 def readRawText(path):
     '''
@@ -243,12 +244,30 @@ def extractText(path):
     # Cases for different media files
     match extension:
         case 'pdf':
+            # use fits to read raw text
             doc = fitz.open(path) 
             for page in doc: 
-                content += page.get_text() 
+                content += page.get_text()
+
         case 'docx':
-            #call pydocx
-            print("Feature not yet implemented.")
+            # use pydocx to read raw text
+            doc = Document(path)
+            full_text = []
+            for paragraph in doc.paragraphs:
+                full_text.append(paragraph.text)
+            content =  '\n'.join(full_text)
+
+        case 'doc':
+            # convert the .doc file and follow same procedure as .docx
+            ''' 
+            path = convert_doc_to_docx(path)
+            doc = Document(path)
+            full_text = []
+            for paragraph in doc.paragraphs:
+                full_text.append(paragraph.text)
+            content =  '\n'.join(full_text)
+            '''
+            print("Feature not yet implemented!")
         case defualt:
             #the file is a txt file and no preprocessing needs to be handled
             with open(path,'r',encoding='utf-8') as f:
@@ -260,9 +279,42 @@ def writeContent(content,path,extension,outDir):
     Takes in outputs from extract text and writes it to an appropriately names .txt file. The outDir is where we want
     to write the text to.
     '''
-
     # Remove the extension from the path string and add txt because we want to write the content to a text file
     fileName = path.split('/')[-1]
     outPath = outDir + '/' + fileName.replace(extension,'txt')
     with open(outPath,"w+",encoding='utf-8') as f:
         f.write(content)
+
+def max_column_or_label(row):
+    ''' 
+    Checks the sum of the language score vector (in this case). If it is zero, then
+    there may not be enough data collected  or the doc is in a language that is not recognized
+    in our program.
+    '''
+    if row.sum() == 0:
+        return "Not Enough Data"
+    else:
+        return row.idxmax()
+
+def convert_doc_to_docx(file_path):
+    ''' 
+    Converts .doc files to .docx
+    '''
+    # Initialize the Word application
+    word = win32com.client.Dispatch("Word.Application")
+    word.Visible = False
+
+    # Open the .doc file
+    doc = word.Documents.Open(file_path)
+
+    # Define the new .docx file path
+    new_file_path = os.path.splitext(file_path)[0] + ".docx"
+
+    # Save the file as .docx
+    doc.SaveAs(new_file_path, FileFormat=16)  # 16 represents the .docx format
+
+    # Close the original document and quit Word
+    doc.Close()
+    word.Quit()
+
+    return new_file_path

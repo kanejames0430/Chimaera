@@ -1,0 +1,15 @@
+﻿Start Time: 1/6/2017 2:11:43 PM(UTC+3)
+Last Activity: 1/6/2017 2:11:43 PM(UTC+3)
+Participants: 905458046989@s.whatsapp.net NURSIMA, 905522037087@s.whatsapp.net 905522037087@s.whatsapp.net
+From: From: 905522037087@s.whatsapp.net 905522037087@s.whatsapp.net
+Timestamp: 1/6/2017 2:11:43 PM(UTC+3)
+Source App: WhatsApp
+Body:
+Incoming Call
+-----------------------------
+From: System Message System Message
+Timestamp: 1/6/2017 2:11:43 PM(UTC+3)
+Source App: WhatsApp
+Body:
+Messages to this chat and calls are now secured with end-to-end encryption. Tap for more info.
+-----------------------------
